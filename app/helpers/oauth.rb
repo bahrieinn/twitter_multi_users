@@ -15,7 +15,13 @@ def request_token
 
     # the `oauth_consumer` method is defined above
     session[:request_token] = oauth_consumer.get_request_token(
-      :oauth_callback => "http://#{host_and_port}/auth"
+      :oauth_callback => "http://#{host_and_port}/auth" 
+      # Our app sends user away with a request token to verify with Twitter
+        # this is route user gets directed to after authentication on Twitter
+      # Twitter, here is the place to come back to after you're done authorizing user X
+      # Our application checks if the redirect from Twitter is valid
+         # App does this in routes /app. 
+         # Twitter comes back to us with an oauth_verifier which is used in 'get_access_token' method to get the ACTUAL access token
     )
   end
   session[:request_token]

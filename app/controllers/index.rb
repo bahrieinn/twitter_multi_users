@@ -17,9 +17,23 @@ get '/auth' do
   @access_token = request_token.get_access_token(:oauth_verifier => params[:oauth_verifier])
   # our request token is only valid until we use it to get an access token, so let's delete it from our session
   session.delete(:request_token)
-
+  @username = @access_token.params[:screen_name]
   # at this point in the code is where you'll need to create your user account and store the access token
-
-  erb :index
   
+  @user = User.create(
+    :username => @username,
+    :oauth_token => @access_token.token,
+    :oauth_secret => @access_token.secret 
+  )
+  
+  session[:username] = @user.username
+  erb :index
 end
+
+post '/tweet' do
+  @user = User.find_by_username(session[:username])
+  @message = params[:message]
+
+  @user.create_thread.update(@message)
+end
+
